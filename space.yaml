@@ -1,0 +1,9 @@
+build:
+  python_version: "3.12"
+  python_packages:
+    - "chainlit==0.7.700"
+    - "python-dotenv==1.0.0"
+    - "requests==2.31.0"
+    - "agents==1.1.0"
+
+run: chainlit run main.py --host 0.0.0.0 --port 7860

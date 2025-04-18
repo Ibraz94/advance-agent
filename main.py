@@ -6,11 +6,14 @@ from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
 from agents.tool import function_tool
 import requests
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from .env file if it exists
+if os.path.exists(".env"):
+    load_dotenv()
 
-# Get Gemini API key from environment variables
+# Get Gemini API key from environment variables with a fallback
 gemini_api_key = os.getenv("GEMINI_API_KEY")
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is not set")
 
 # Initialize OpenAI provider with Gemini API settings
 provider = AsyncOpenAI(

@@ -1,21 +1,33 @@
-# Use the official Python image as a parent image
+# Use Python 3.12 slim as base image
 FROM python:3.12-slim
 
-# Set the working directory in the container
+# Set environment variables
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt .
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port the app runs on
+# Copy the rest of the application
+COPY . .
+
+# Expose the port Chainlit runs on
 EXPOSE 8000
 
-# Define environment variable
-ENV PYTHONUNBUFFERED=1
-
-# Run the application
-CMD ["python", "main.py"]
+# Start the Chainlit app
+CMD ["chainlit", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"]
