@@ -27,14 +27,16 @@ WORKDIR /app
 RUN mkdir -p /app/.files /app/.chainlit \
     && chown -R chainlit:chainlit /app/.files /app/.chainlit
 
-# Copy requirements first to leverage Docker cache
-COPY --chown=chainlit:chainlit requirements.txt .
+# Copy requirements and project files first
+COPY --chown=chainlit:chainlit requirements.txt pyproject.toml ./
+
+# Install pip-tools and generate requirements
+RUN pip install --no-cache-dir pip-tools \
+    && pip-compile pyproject.toml --output-file requirements.txt \
+    && pip install --no-cache-dir -r requirements.txt
 
 # Switch to non-root user
 USER chainlit
-
-# Install Python dependencies
-RUN pip install --no-cache-dir --user -r requirements.txt
 
 # Copy the rest of the application
 COPY --chown=chainlit:chainlit . .
