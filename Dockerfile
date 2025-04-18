@@ -15,17 +15,25 @@ RUN apt-get update \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Create non-root user
+RUN useradd -m -u 1000 chainlit
+RUN mkdir -p /app && chown chainlit:chainlit /app
+USER chainlit
+
 # Set the working directory
 WORKDIR /app
 
+# Create and set permissions for the .files directory
+RUN mkdir -p /app/.files && chown -R chainlit:chainlit /app/.files
+
 # Copy requirements first to leverage Docker cache
-COPY requirements.txt .
+COPY --chown=chainlit:chainlit requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
-COPY . .
+COPY --chown=chainlit:chainlit . .
 
 # Expose the port Chainlit runs on
 EXPOSE 8000
