@@ -1,4 +1,4 @@
-# Use Python 3.12 slim as base image
+# Use the official Python image as a parent image
 FROM python:3.12-slim
 
 # Set environment variables
@@ -12,6 +12,7 @@ ENV PYTHONFAULTHANDLER=1 \
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
