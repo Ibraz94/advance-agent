@@ -10,5 +10,3 @@ wheels/
 # Virtual environments
 .venv
 .env.gitignore
-temp_interactive_push.bat
-branch_structure.json
